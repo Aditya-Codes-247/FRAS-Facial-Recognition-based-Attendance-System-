@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRAS</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #090505;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .container {
+            text-align: center;
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .square-bg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            margin: 10px 0;
+            padding: 20px;
+        }
+        .square-bg img {
+            max-width: 30%;
+            height: auto;
+        }
+        .btn {
+            padding: 8px 20px;
+            color: rgb(65, 141, 228);
+            background-color: rgb(39, 38, 38);
+            border: none;
+            cursor: pointer;
+            border-radius: 20px;
+            margin: 10px;
+        }
+        .image-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .image-container img {
+            width: 150px;
+            height: 150px;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .form-container input {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ea6b6b;
+        }
+        #camera, #camera2 {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        video {
+            width: 320px;
+            height: 240px;
+            border: 1px solid black;
+        }
+        canvas {
+            display: none;
+        }
+        .time-display {
+            text-align: center;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .report {
+            color: white;
+            font-size: 24px;
+            margin-top: 20px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page 1: Get Started -->
+    <div id="page1" class="container active">
+        <div class="square-bg">
+            <img src="static\FRAS_logo.png" alt="Sample Image">
+        </div>
+        <div class="square-bg">
+            <button class="btn" onclick="getStarted()">GET STARTED</button>
+        </div>
+    </div>
+
+    <!-- Page 2: Sign In / Sign Up -->
+    <div id="page2" class="container">
+        <div class="image-container">
+            <img src="static\FRAS_logo.png" alt="Square Image">
+        </div>
+        <button class="btn" onclick="signIn()">Sign In</button>
+        <button class="btn" onclick="signUp()">Sign Up</button>
+    </div>
+
+    <!-- Page 3: Form with Camera -->
+    <div id="page3" class="container">
+        <div class="form-container">
+            <h2>Employee Signup</h2>
+            <form id="signupForm" enctype="multipart/form-data" method="POST">
+                <div class="form-group">
+                    <label for="employee_id">Employee ID:</label>
+                    <input type="text" id="employee_id" name="employee_id" required>
+                </div>
+                <div class="form-group">
+                    <label for="name">Employee Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile_number">Employee Mobile Number:</label>
+                    <input type="text" id="mobile_number" name="mobile_number" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Employee Email ID:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="person_name">Unique Employee ID:</label>
+                    <input type="text" id="person_name" name="person_name" required>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn" onclick="startCamera()">Start Camera</button>
+                    <button type="button" class="btn" onclick="capturePhotos()">Capture Photos</button>
+                </div>
+                <div id="camera">
+                    <video id="video" autoplay></video>
+                    <canvas id="canvas" style="display:none;"></canvas>
+                </div>
+                <div id="capturedImages" style="display:none;"></div>
+                <div class="form-group">
+                    <button type="button" class="btn" onclick="sendOTP()">Send OTP</button>
+                </div>
+                <div class="form-group">
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" id="otp" name="otp" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn" style="--clr: #00FFFF">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Page 4: Live Webcam -->
+    <div id="page4" class="container">
+        <h1>Sign In</h1>
+    <input type="text" id="emp_id_verify_face" placeholder="Enter Employee ID">
+    <button id="startCamera2" class="btn">Start Camera</button>
+    <button id="capturePhoto2" class="btn">Capture Photo</button>
+    <button id="verifyFace" class="btn">Verify Face</button>
+    <video id="video2" width="640" height="480" autoplay></video>
+    <canvas id="canvas2" width="640" height="480" style="display: none;"></canvas>
+    </div>
+    <!-- Page 5: Punch and Break -->
+    <div id="page5" class="container">
+        <input type="text" id="employee_id_punch" placeholder="Enter Employee ID" required>
+        <div id="punchTime" class="time-display"></div>
+        <button id="punchBtn" class="btn" onclick="togglePunch()">PUNCH IN</button>
+        <div id="breakTime" class="time-display"></div>
+        <button id="breakBtn" class="btn" onclick="toggleBreak()">BREAK IN</button>
+        <div id="report" class="report"></div>
+    </div>
+    <script>
+        let punchInTime = null;
+        let punchOutTime = null;
+        let breakInTime = null;
+        let breakOutTime = null;
+        let otpCode = null;
+
+        function getStarted() {
+            document.getElementById('page1').classList.remove('active');
+            document.getElementById('page2').classList.add('active');
+        }
+
+        function signIn() {
+            document.getElementById('page2').classList.remove('active');
+            document.getElementById('page4').classList.add('active');
+            startCamera2();
+        }
+
+        function signUp() {
+            document.getElementById('page2').classList.remove('active');
+            document.getElementById('page3').classList.add('active');
+        }
+
+        let imageCounter = 0;
+        const maxImages = 15;
+
+        function startCamera() {
+            document.getElementById('camera').style.display = 'flex';
+            const video = document.getElementById('video');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then((stream) => {
+                    video.srcObject = stream;
+                })
+                .catch((err) => {
+                    console.error("Error accessing the camera: " + err);
+                });
+        }
+        async function capturePhoto() {
+            if (imageCounter >= maxImages) {
+                alert(`You can only capture ${maxImages} images.`);
+                return;
+            }
+
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const dataURL = canvas.toDataURL('image/png');
+            const img = document.createElement('img');
+            img.src = dataURL;
+            img.style.display = 'none';
+
+            const form = document.getElementById('signupForm');
+            form.appendChild(img);
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `photo_${imageCounter + 1}`;
+            input.value = dataURL;
+            form.appendChild(input);
+
+            imageCounter++;
+        }
+
+        async function capturePhotos() {
+            for (let i = 0; i < maxImages; i++) {
+                await capturePhoto();
+            }
+            alert('Captured all required images.');
+        }
+        let video = document.getElementById('video2');
+        let canvas = document.getElementById('canvas2');
+        let context = canvas.getContext('2d');
+        
+        document.getElementById('startCamera2').addEventListener('click', function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.log("An error occurred: " + err);
+                });
+        });
+
+        document.getElementById('capturePhoto2').addEventListener('click', function() {
+            context.drawImage(video, 0, 0, 640, 480);
+            let image_data_url = canvas.toDataURL('image/png');
+            sessionStorage.setItem('capturedImage', image_data_url);
+            alert("Photo Captured Successfully")
+        });
+
+        document.getElementById('verifyFace').addEventListener('click', function() {
+    console.log("Verify Face button clicked");
+    let empId = document.getElementById('emp_id_verify_face').value;
+    let imageData = sessionStorage.getItem('capturedImage');
+    console.log("Employee ID:", empId);
+    console.log("Captured Image Data:", imageData);
+    if (!empId || !imageData) {
+        alert("Employee ID or captured photo is missing");
+        return;
+    }
+    // Logging data to be sent
+    console.log({
+        emp_id_verify_face: empId,
+        photo: imageData
+    });
+
+    fetch('/verify_face', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            emp_id_verify_face: empId,
+            photo: imageData
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(error => { throw new Error(error.error); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response from server:", data);
+        alert(data.message);
+        if(data.message === "Face verified successfully"){
+            document.getElementById('page4').classList.remove('active');
+            document.getElementById('page5').classList.add('active');
+        }
+    })
+    .catch(error => {
+        console.error("Error response from server:", error);
+        alert(error.message || "An error occurred");
+    });
+});
+
+function togglePunch() {
+            const punchBtn = document.getElementById('punchBtn');
+            const currentTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+            const employeeId = document.getElementById('employee_id_punch').value;
+
+            if (!employeeId) {
+                alert("Please enter Employee ID.");
+                return;
+            }
+
+            if (punchBtn.textContent === "PUNCH IN") {
+                punchBtn.textContent = "PUNCH OUT";
+                punchInTime = currentTime;
+
+                // Save punch-in time to the backend
+                fetch('/punch_in', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        employee_id: employeeId,
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                punchBtn.textContent = "PUNCH IN";
+                punchOutTime = currentTime;
+                document.getElementById('breakBtn').disabled = true;
+
+                // Save punch-out time to the backend
+                fetch('/punch_out', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        employee_id: employeeId,
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
+            updatePunchTimeDisplay();
+            updateReport();
+        }
+
+        function toggleBreak() {
+            const breakBtn = document.getElementById('breakBtn');
+            const currentTime = new Date().toLocaleString('en-US', {timeZone: 'Asia/Kolkata'});
+            if (breakBtn.textContent === "BREAK IN") {
+                breakBtn.textContent = "BREAK OUT";
+                breakInTime = currentTime;
+            } else {
+                breakBtn.textContent = "BREAK IN";
+                breakOutTime = currentTime;
+            }
+            updateBreakTimeDisplay();
+            updateReport();
+        }
+        function updatePunchTimeDisplay() {
+            const punchTimeDiv = document.getElementById('punchTime');
+            punchTimeDiv.innerHTML = punchInTime ? "Punched in at: " + punchInTime + "<br>" : "";
+            punchTimeDiv.innerHTML += punchOutTime ? "Punched out at: " + punchOutTime : "";
+        }
+        function updateBreakTimeDisplay() {
+            const breakTimeDiv = document.getElementById('breakTime');
+            breakTimeDiv.innerHTML = breakInTime ? "Broke in at: " + breakInTime + "<br>" : "";
+            breakTimeDiv.innerHTML += breakOutTime ? "Broke out at: " + breakOutTime : "";
+        }
+        function updateReport() {
+            const reportDiv = document.getElementById('report');
+            if (punchInTime && punchOutTime) {
+                const punchInDateTime = new Date(punchInTime);
+                const punchOutDateTime = new Date(punchOutTime);
+                const timeDifference = punchOutDateTime - punchInDateTime;
+                let breakTimeDifference = 0;
+                if (breakInTime && breakOutTime) {
+                    const breakInDateTime = new Date(breakInTime);
+                    const breakOutDateTime = new Date(breakOutTime);
+                    breakTimeDifference = breakOutDateTime - breakInDateTime;
+                }
+                const totalWorkedTime = timeDifference - breakTimeDifference;
+                const hoursWorked = Math.floor(totalWorkedTime / (1000 * 60 * 60));
+                const minutesWorked = Math.floor((totalWorkedTime % (1000 * 60 * 60)) / (1000 * 60));
+                reportDiv.innerHTML = "Total time worked: " + hoursWorked + " hours " + minutesWorked + " minutes";
+            }
+            else{
+                reportDiv.innerHTML = "";
+            }
+        }
+        function punch(punchType) {
+        const empId = ""; // Fetch employee ID from session or input field
+        fetch('/punch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                emp_id: empId,
+                punch_type: punchType
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => { throw new Error(error.error); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            updatePunchTimeDisplay();
+        })
+        .catch(error => {
+            console.error("Error response from server:", error);
+            alert(error.message || "An error occurred");
+        });
+    }
+        function sendOTP() {
+            const email = document.getElementById('email').value;
+            fetch(`/send_otp?email=${email}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        otpCode = data.otp;
+                        alert('OTP sent to your email.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        }
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const enteredOTP = document.getElementById('otp').value;
+
+        if (enteredOTP !== otpCode) {
+            alert('Invalid OTP. Please try again.');
+            return;
+        }
+
+        const formData = new FormData(this);
+
+        fetch('/signup', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                if (data.message === 'Employee signed up successfully') {
+                    document.getElementById('page3').classList.remove('active');
+                    document.getElementById('page5').classList.add('active');
+                }
+            } else if (data.error) {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    });
+    </script>
+</body>
+</html>
+
